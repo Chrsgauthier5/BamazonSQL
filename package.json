@@ -1,0 +1,25 @@
+{
+  "name": "BamazonSQL",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bamazon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chrsgauthier5/BamazonSQL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chrsgauthier5/BamazonSQL/issues"
+  },
+  "homepage": "https://github.com/Chrsgauthier5/BamazonSQL#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "inquirer": "^6.2.1",
+    "mysql": "^2.16.0"
+  }
+}
