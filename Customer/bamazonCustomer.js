@@ -5,6 +5,7 @@
 
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var cTable = require('console.table');
 require('dotenv').config()
 
 var connection = mysql.createConnection({
@@ -17,11 +18,11 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log('connected!');
-    connection.query('SELECT * FROM PRODUCTS', function (error, results, fields) {
-        fullResults = results
+    console.log('connected!\n');
+    connection.query('SELECT * FROM PRODUCTS', function (error, results) {
+        const table = results;
+        console.table(table);
         if (error) throw error;
-        logResults(results);
         inquireUser();
     });
 });
@@ -36,7 +37,7 @@ function inquireUser() {
             {
                 type: 'input',
                 name: 'prodID',
-                message: 'Please enter the Product ID of the item you would like to buy'
+                message: 'Please enter the item_id of the item you would like to buy'
             },
             {
                 type: 'input',
@@ -70,31 +71,39 @@ function stockCheck(prodID, units) {
         }
         else {
             var data = results;
-            fulfillOrder(units, prodID, data)                         // if units ordered  is less than units in stock, fulfill the order
+            fulfillOrder(units, prodID)                         // if units ordered  is less than units in stock, fulfill the order
             console.log('You successfully purchased ' + units + " unit(s) of " + product + ".\n" +
-            "This cost you $" + price*units);
+                "This cost you $" + price * units);
             connection.end();
         }
 
     });
 }
 
-function fulfillOrder(units, prodID, data) {
+function fulfillOrder(units, prodID) {
     connection.query('UPDATE BAMAZON.PRODUCTS SET STOCK_QUANTITY = STOCK_QUANTITY - ? WHERE ITEM_ID = ?', [units, prodID],
         function (error, results) {
             if (error) throw error;
-            logResults(data);
         });
-    
+    connection.query('SELECT * FROM PRODUCTS WHERE ITEM_ID =?', prodID,
+        function (error, results) {
+            if (error) throw error;
+            logResults(results);
+        });
+
 }
 
 function logResults(results) {
-    for (i = 0; i < results.length; i++) {
-        var id = results[i].item_id;
-        var product = results[i].product_name;
-        var department = results[i].department_name;
-        var price = results[i].price;
-        var stock = results[i].stock_quantity;
-        console.log(id + ' | ' + product + ' | ' + department + ' | ' + price + ' | ' + stock + ' | ' + '\n')
-    }
+    console.table(results);
+    inquireUser();
 }
+//     for (i = 0; i < results.length; i++) {
+//         var id = results[i].item_id;
+//         var product = results[i].product_name;
+//         var department = results[i].department_name;
+//         var price = results[i].price;
+//         var stock = results[i].stock_quantity;
+//         console.log(id + ' | ' + product + ' | ' + department + ' | ' + price + ' | ' + stock + ' | ' + '\n')
+//     }
+// }
+

@@ -2,7 +2,7 @@
 //npm install mysql
 //npm install inquirer
 //npm install dotenv
-var poop = [];
+
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 require('dotenv').config()
@@ -14,11 +14,11 @@ var connection = mysql.createConnection({
     password: process.env.DB_PASS,
     database: 'BAMAZON'
 });
-console.log(poop);
-// inquireManager();
-itemsArray();
 
-console.log(poop);
+// inquireManager();
+console.log(itemsArray());
+
+
 
 function inquireManager() {
     inquirer
@@ -132,19 +132,17 @@ function addInvInquire() {
 
 //-------------------------------------------Items Name Array------------------------------------------------------------------------------//
 function itemsArray() {
-    connection.connect(function (err) {
-        if (err) throw err;
-        connection.query('SELECT PRODUCT_NAME FROM PRODUCTS', function (error, results) {
-            if (error) throw error;
-            for (i = 0; i < results.length; i++) {
-                poop.push(results[i].PRODUCT_NAME);
-            }
-            return poop;
- 
-        });
- 
+    connection.query('SELECT PRODUCT_NAME FROM PRODUCTS', function (error, results) {
+        itemArray = [];
+        if (error) throw error;
+        for (i = 0; i < results.length; i++) {
+            itemArray.push(results[i].PRODUCT_NAME);
+        }
+
+        return itemArray;
     });
- }
+    
+}
 //--------------------------------------------------------- Add New Product ----------------------------------------------------------------//
 
 function addNewProduct() {
@@ -199,17 +197,17 @@ function newProductInquire() {
         });
 }
 
-function newProduct(prod, dept, price, stock){
+function newProduct(prod, dept, price, stock) {
     connection.connect(function (err) {
         if (err) throw err;
-        connection.query('INSERT INTO PRODUCTS (PRODUCT_NAME, DEPARTMENT_NAME, PRICE, STOCK_QUANTITY) VALUES (?,?,?,?)', [prod, dept, price, stock], 
-        function (error, results) {
-            if (error) throw error;
-            logResults(results);
-            console.log('Successfully added ' + prod + ' to the databse!');
-            connection.end();
+        connection.query('INSERT INTO PRODUCTS (PRODUCT_NAME, DEPARTMENT_NAME, PRICE, STOCK_QUANTITY) VALUES (?,?,?,?)', [prod, dept, price, stock],
+            function (error, results) {
+                if (error) throw error;
+                logResults(results);
+                console.log('Successfully added ' + prod + ' to the databse!');
+                connection.end();
 
-        });
+            });
     });
 
 }
