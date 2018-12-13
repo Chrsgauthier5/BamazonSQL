@@ -19,3 +19,11 @@ values ('Super Soaker', 'Toys', 40.00, 100), ('Sleeping Bag', 'Outdoors', 29.95,
 ('Keurig Coffee Maker', 'Home/Kitchen', 99.00, 25), ('Electric Toothbrush', 'Health & Beauty', 50.00, 15), ('60" 4K Televsion ', 'Electronics', 499.95, 16),
 ('Ticonderoga Pencil', 'Office Supplies', 0.25, 100000);
 
+
+create table BAMAZON.DEPARTMENTS(
+    department_id int not null auto_increment primary key,
+    department_name varchar(50) not null,
+    over_head_costs int,
+    product_sales decimal (10, 4)
+
+);

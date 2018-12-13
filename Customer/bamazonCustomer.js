@@ -58,9 +58,10 @@ function inquireUser() {
 function stockCheck(prodID, units) {
     connection.query('SELECT * FROM PRODUCTS WHERE ITEM_ID =?', prodID, function (error, results) {
         var product = results[0].product_name;
-       
+        var price = results[0].price
+
         if (error) throw error;
-        
+
 
         if (units > results[0].stock_quantity) {
             console.log('Insufficient Quantity!  Not enough ' + product + ' in stock...') // order amount of units exceeds the amount of units in stock
@@ -68,20 +69,23 @@ function stockCheck(prodID, units) {
             inquireUser();
         }
         else {
-            fulfillOrder(units, prodID)                         // if units ordered  is less than units in stock, fulfill the order
-            console.log('You successfully purchased ' + units + " unit(s) of " + product);
+            var data = results;
+            fulfillOrder(units, prodID, data)                         // if units ordered  is less than units in stock, fulfill the order
+            console.log('You successfully purchased ' + units + " unit(s) of " + product + ".\n" +
+            "This cost you $" + price*units);
             connection.end();
         }
 
     });
 }
 
-function fulfillOrder(units, prodID) {
+function fulfillOrder(units, prodID, data) {
     connection.query('UPDATE BAMAZON.PRODUCTS SET STOCK_QUANTITY = STOCK_QUANTITY - ? WHERE ITEM_ID = ?', [units, prodID],
         function (error, results) {
             if (error) throw error;
-            logResults(results);
+            logResults(data);
         });
+    
 }
 
 function logResults(results) {
