@@ -101,32 +101,44 @@ function viewLowInv() {
 
 //---------------------------------------------------------Add Inv Inquire -------------------------------------------------------------//
 function addInvInquire() {
-    inquirer
-        .prompt([
-            {
-                type: 'rawlist',
-                name: 'product',
-                message: 'Which item would you like to add more inventory to?',
-                choices: itemsArray() //  should return an array with all the item names  ['Super Soaker', 'Keurig', 'Nintendo Switch', 'Zelda Breath of the Wild']
-            },
-            {
-                type: 'input',
-                name: 'units',
-                message: 'How many units would you like to add to the inventory?'
-            }
-        ])
-        .then(answers => {
-            var product = answers.moreInv;
-            var units = answers.units;
-            connection.query('UPDATE PRODCUTS SET STOCK_QUANITY = STOCK_QAUNTITY + ? WHERE PRODUCT_NAME = ?', [units, product], function (error, results) {
-                if (error) throw error;
-                console.log("Successfully increased the inventory of " + product + " by " + units + " units");
-                connection.end();
+
+    connection.query('SELECT PRODUCT_NAME FROM PRODUCTS', function (error, results) {
+        if (error) throw error;
+        items = [];
+        for (i = 0; i < results.length; i++) {
+            items.push(results[i].PRODUCT_NAME);
+        }
+        addInventory();
+
+    });
+    function addInventory() {
+        inquirer
+            .prompt([
+                {
+                    type: 'rawlist',
+                    name: 'product',
+                    message: 'Which item would you like to add more inventory to?',
+                    choices: items
+                },
+                {
+                    type: 'input',
+                    name: 'units',
+                    message: 'How many units would you like to add to the inventory?'
+                }
+            ])
+            .then(answers => {
+                var product = answers.product;
+                var units = answers.units;
+                connection.query('UPDATE PRODUCTS SET STOCK_QUANTITY = STOCK_QUANTITY + ? WHERE PRODUCT_NAME = ?', [units, product], function (error, results) {
+                    if (error) throw error;
+                    console.log("Successfully increased the inventory of " + product + " by " + units + " units");
+                    connection.end();
+
+                });
+
 
             });
-
-
-        });
+    }
 }
 
 //-------------------------------------------Items Name Array------------------------------------------------------------------------------//
@@ -208,9 +220,9 @@ function newProduct(prod, dept, price, stock) {
 
             });
         connection.query('SELECT * FROM PRODUCTS', function (error, results) {
-                if (error) throw error;
-                console.table(results);
-            });
+            if (error) throw error;
+            console.table(results);
+        });
     });
 
 }
