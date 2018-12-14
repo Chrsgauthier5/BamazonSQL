@@ -30,7 +30,6 @@ function inquireManager() {
             }
         ])
         .then(answers => {
-            console.log(answers);
 
             switch (answers.dashboard) {
 
@@ -47,7 +46,7 @@ function inquireManager() {
                     break;
 
                 case 'Add New Product':
-                    addNewProduct();
+                    newProductInquire();
                     break;
 
                 default:
@@ -63,14 +62,10 @@ function inquireManager() {
 //--------------------------------------------------------- View Products for Sale ----------------------------------------------------------------//
 
 function viewProducts() {
-    connection.connect(function (err) {
-        if (err) throw err;
-        connection.query('SELECT * FROM PRODUCTS', function (error, results) {
-            if (error) throw error;
-            console.table(results);
-            connection.end();
-
-        });
+    connection.query('SELECT * FROM PRODUCTS', function (error, results) {
+        if (error) throw error;
+        console.table(results);
+        inquireManager();
     });
 }
 
@@ -78,30 +73,15 @@ function viewProducts() {
 //--------------------------------------------------------- View Low Inventory ----------------------------------------------------------------//
 
 function viewLowInv() {
-    connection.connect(function (err) {
-        if (err) throw err;
-        connection.query('SELECT * FROM PRODUCTS WHERE STOCK_QUANTITY < 5', function (error, results) {
-            if (error) throw error;
-            console.table(results);
-            connection.end();
-
-        });
+    connection.query('SELECT * FROM PRODUCTS WHERE STOCK_QUANTITY < 5', function (error, results) {
+        if (error) throw error;
+        console.table(results);
+        inquireManager();
     });
 }
 
-//--------------------------------------------------------- Add Inventory ----------------------------------------------------------------//
-
-// function addInv() {
-//     connection.connect(function (err) {
-//         if (err) throw err;
-//         addInvInquire();
-
-//     });
-// }
-
 //---------------------------------------------------------Add Inv Inquire -------------------------------------------------------------//
 function addInvInquire() {
-
     connection.query('SELECT PRODUCT_NAME FROM PRODUCTS', function (error, results) {
         if (error) throw error;
         items = [];
@@ -109,8 +89,8 @@ function addInvInquire() {
             items.push(results[i].PRODUCT_NAME);
         }
         addInventory();
-
     });
+
     function addInventory() {
         inquirer
             .prompt([
@@ -131,48 +111,23 @@ function addInvInquire() {
                 var units = answers.units;
                 connection.query('UPDATE PRODUCTS SET STOCK_QUANTITY = STOCK_QUANTITY + ? WHERE PRODUCT_NAME = ?', [units, product], function (error, results) {
                     if (error) throw error;
-                    console.log("Successfully increased the inventory of " + product + " by " + units + " units");
-                    connection.end();
-
+                    console.log('------------------------------------------------------------------------------\n')
+                    console.log("Successfully increased the inventory of " + product + " by " + units + " units!");
+                    
                 });
-
+                connection.query('SELECT * FROM PRODUCTS', function (error, results) {
+                    if (error) throw error;
+                    console.log('------------------------------------------------------------------------------\n')
+                    console.table(results);
+                    inquireManager();
+                });
 
             });
     }
 }
 
-//-------------------------------------------Items Name Array------------------------------------------------------------------------------//
-function itemsArray() {
-    connection.query('SELECT PRODUCT_NAME FROM PRODUCTS', function (error, results) {
-        itemArray = [];
-        if (error) throw error;
-        for (i = 0; i < results.length; i++) {
-            itemArray.push(results[i].PRODUCT_NAME);
-        }
+//-------------------------------------------New Item Add------------------------------------------------------------------------------//
 
-        connection.end();
-    });
-
-}
-//--------------------------------------------------------- Add New Product ----------------------------------------------------------------//
-
-function addNewProduct() {
-    newProductInquire();
-
-}
-
-//-----------------------------------------------------Log Results to Console --------------------------------------------------------------//
-
-function logResults(results) {
-    for (i = 0; i < results.length; i++) {
-        var id = results[i].item_id;
-        var product = results[i].product_name;
-        var department = results[i].department_name;
-        var price = results[i].price;
-        var stock = results[i].stock_quantity;
-        console.log(id + ' | ' + product + ' | ' + department + ' | ' + price + ' | ' + stock + ' | ' + '\n')
-    }
-}
 
 function newProductInquire() {
 
@@ -208,22 +163,19 @@ function newProductInquire() {
         });
 }
 
+// -------------------------------------------------------------- Add new Product to DB from New Product Inquire info --------------------------------------------------------//
+
 function newProduct(prod, dept, price, stock) {
-    connection.connect(function (err) {
-        if (err) throw err;
+
         connection.query('INSERT INTO PRODUCTS (PRODUCT_NAME, DEPARTMENT_NAME, PRICE, STOCK_QUANTITY) VALUES (?,?,?,?)', [prod, dept, price, stock],
             function (error, results) {
                 if (error) throw error;
-                logResults(results);
                 console.log('Successfully added ' + prod + ' to the databse!');
-                connection.end();
-
             });
         connection.query('SELECT * FROM PRODUCTS', function (error, results) {
             if (error) throw error;
             console.table(results);
+            inquireManager();
         });
-    });
-
 }
 
