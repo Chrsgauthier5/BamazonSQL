@@ -5,6 +5,7 @@
 
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var cTable = require('console.table');
 require('dotenv').config()
 
 var connection = mysql.createConnection({
@@ -15,9 +16,7 @@ var connection = mysql.createConnection({
     database: 'BAMAZON'
 });
 
-// inquireManager();
-console.log(itemsArray());
-
+inquireManager();
 
 
 function inquireManager() {
@@ -68,7 +67,7 @@ function viewProducts() {
         if (err) throw err;
         connection.query('SELECT * FROM PRODUCTS', function (error, results) {
             if (error) throw error;
-            logResults(results);
+            console.table(results);
             connection.end();
 
         });
@@ -83,7 +82,7 @@ function viewLowInv() {
         if (err) throw err;
         connection.query('SELECT * FROM PRODUCTS WHERE STOCK_QUANTITY < 5', function (error, results) {
             if (error) throw error;
-            logResults(results);
+            console.table(results);
             connection.end();
 
         });
@@ -139,9 +138,9 @@ function itemsArray() {
             itemArray.push(results[i].PRODUCT_NAME);
         }
 
-        return itemArray;
+        connection.end();
     });
-    
+
 }
 //--------------------------------------------------------- Add New Product ----------------------------------------------------------------//
 
@@ -207,6 +206,10 @@ function newProduct(prod, dept, price, stock) {
                 console.log('Successfully added ' + prod + ' to the databse!');
                 connection.end();
 
+            });
+        connection.query('SELECT * FROM PRODUCTS', function (error, results) {
+                if (error) throw error;
+                console.table(results);
             });
     });
 

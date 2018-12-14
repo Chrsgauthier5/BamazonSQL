@@ -66,11 +66,10 @@ function stockCheck(prodID, units) {
 
         if (units > results[0].stock_quantity) {
             console.log('Insufficient Quantity!  Not enough ' + product + ' in stock...') // order amount of units exceeds the amount of units in stock
-            connection.end();
             inquireUser();
         }
         else {
-            var data = results;
+            
             fulfillOrder(units, prodID)                         // if units ordered  is less than units in stock, fulfill the order
             console.log('You successfully purchased ' + units + " unit(s) of " + product + ".\n" +
                 "This cost you $" + price * units);
@@ -95,15 +94,6 @@ function fulfillOrder(units, prodID) {
 
 function logResults(results) {
     console.table(results);
-    inquireUser();
+    
 }
-//     for (i = 0; i < results.length; i++) {
-//         var id = results[i].item_id;
-//         var product = results[i].product_name;
-//         var department = results[i].department_name;
-//         var price = results[i].price;
-//         var stock = results[i].stock_quantity;
-//         console.log(id + ' | ' + product + ' | ' + department + ' | ' + price + ' | ' + stock + ' | ' + '\n')
-//     }
-// }
 
