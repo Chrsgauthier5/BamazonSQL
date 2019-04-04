@@ -2,6 +2,10 @@
 
  This is a CLI application modeled after an Amazon type buying environment powered by SQL and inquirer.js
  
+ You will need to add a .env file that contains the following:
+  * DB_USER=
+  * DB_PASS=
+ 
  # How to use Bamazon Customer:
  
  Navigate into the customer directory from the top level by running ```cd customer``` then ```node bamazonCustomer.js```
